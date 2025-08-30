@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/user.controller');
+const { authenticateUser } = require('../middlewares/auth.middleware');
 
-router.get('/', userController.getAllUsers);
-router.post('/', userController.createUser);
+// API cần đăng nhập
+router.get('/profile', authenticateUser);
 
 module.exports = router;

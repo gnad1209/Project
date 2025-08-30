@@ -1,4 +1,4 @@
-module.exports = function() {
-  console.log("🧹 Cleaning old records...");
+module.exports = function () {
+  console.log('🧹 Cleaning old records...');
   // viết logic delete DB ở đây
 };
