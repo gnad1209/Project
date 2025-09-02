@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Socket.IO Chat</title>
+    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      #messageList {
+        list-style-type: none;
+        padding: 0;
+      }
+      #messageList li {
+        margin: 5px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Chat Room</h1>
+    <ul id="messageList"></ul>
+    <!-- Danh sách tin nhắn sẽ được hiển thị ở đây -->
+
+    <input type="text" id="messageInput" placeholder="Nhập tin nhắn tại đây" />
+    <button id="sendButton">Gửi</button>
+
+    <script>
+      // Giả sử token đã được lưu trong localStorage sau khi đăng nhập
+      const token = localStorage.getItem('token'); // Hoặc lấy token từ nơi khác
+
+      const socket = io('http://localhost:3000', {
+        auth: { token: token }, // Gửi token trong handshake
+      });
+
+      socket.on('connect', () => {
+        console.log('Connected to server');
+        // Gửi yêu cầu lấy tin nhắn
+        socket.emit('get messages');
+      });
+
+      // Nhận danh sách tin nhắn từ server
+      socket.on('messages', (messages) => {
+        const messageList = document.getElementById('messageList');
+        messageList.innerHTML = ''; // Xóa danh sách hiện tại
+
+        messages.forEach((msg) => {
+          const li = document.createElement('li');
+          li.textContent = msg.content; // Hiển thị nội dung tin nhắn
+          messageList.appendChild(li);
+        });
+      });
+
+      // Gửi tin nhắn khi nhấn nút
+      document.getElementById('sendButton').onclick = function () {
+        const messageInput = document.getElementById('messageInput');
+        const message = messageInput.value;
+
+        if (message) {
+          socket.emit('chat message', message); // Gửi tin nhắn đến server
+          messageInput.value = ''; // Xóa ô input sau khi gửi
+        }
+      };
+
+      // Nhận tin nhắn từ server và hiển thị
+      socket.on('chat message', (msg) => {
+        const messageList = document.getElementById('messageList');
+        const li = document.createElement('li');
+        li.textContent = msg; // Hiển thị nội dung tin nhắn
+        messageList.appendChild(li);
+      });
+    </script>
+  </body>
+</html>

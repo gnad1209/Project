@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const routes = require('../index.route');
-const errorHandler = require('../src/middlewares/errorHandler');
+const errorHandler = require('../server/src/middlewares/errorHandler');
 
 const app = express();
 
