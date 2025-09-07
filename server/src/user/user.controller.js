@@ -43,7 +43,7 @@ const userController = {
 
   update: async (req, res) => {
     try {
-      await userService.update(req.params.id, req.body, req.user.user);
+      await userService.update(req.params.id, req.body, req.user.user, req.files);
       res.json({ message: 'Updated successfully' });
     } catch (err) {
       res.status(400).json({ error: err.message });

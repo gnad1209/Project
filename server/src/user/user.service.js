@@ -1,5 +1,16 @@
 const bcrypt = require('bcryptjs');
 const User = require('./user.model');
+const cloudinary = require('cloudinary').v2;
+const dotenv = require('dotenv');
+dotenv.config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+module.exports = cloudinary;
 
 const userService = {
   getAll: async (query) => {
@@ -24,9 +35,19 @@ const userService = {
     return result;
   },
 
-  update: async (id, updates, userId) => {
+  update: async (id, updates, userId, files) => {
     const fields = [];
     const values = [];
+    let imageUrls = [];
+    if (files && files.length > 0) {
+      imageUrls = await Promise.all(
+        files.map((file) => uploadImage(file.buffer, file.originalname)),
+      );
+
+      // Ví dụ: lưu vào cột "images" (JSON)
+      fields.push(`image = ?`);
+      values.push(JSON.stringify(imageUrls));
+    }
 
     // Lặp qua các trường trong đối tượng updates
     for (const key of Object.keys(updates)) {
@@ -65,5 +86,24 @@ const userService = {
     return await User.remove(id);
   },
 };
+
+/**
+ * Upload ảnh lên Cloudinary
+ * @param {Buffer} fileBuffer - file buffer
+ * @param {string} fileName - tên file gốc
+ */
+async function uploadImage(fileBuffer, fileName) {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream(
+        { folder: 'myapp/uploads', public_id: fileName.split('.')[0] },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result.secure_url); // trả về URL ảnh
+        },
+      )
+      .end(fileBuffer);
+  });
+}
 
 module.exports = userService;

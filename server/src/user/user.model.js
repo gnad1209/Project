@@ -61,7 +61,7 @@ const User = {
       },
       status: query.status || 'ACTIVE',
       sort: [
-        { field: 'age', order: 'DESC' },
+        { field: 'updated_at', order: 'DESC' },
         { field: 'username', order: 'ASC' },
       ],
       page: query.page || 1,

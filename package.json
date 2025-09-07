@@ -14,17 +14,20 @@
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
+    "cloudinary": "^2.7.0",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "ioredis": "^5.7.0",
     "jsonwebtoken": "^9.0.2",
     "loader": "^2.1.1",
     "morgan": "^1.10.1",
+    "multer": "^2.0.2",
     "mysql2": "^3.14.3",
     "node-cron": "^4.2.1",
     "nodemon": "^3.1.10",
     "oracledb": "^6.9.0",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "storage": "^0.2.0"
   },
   "devDependencies": {
     "eslint": "^9.34.0",
