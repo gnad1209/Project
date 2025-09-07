@@ -60,6 +60,10 @@ const User = {
         keyword: query.search,
       },
       status: query.status || 'ACTIVE',
+      sort: [
+        { field: 'age', order: 'DESC' },
+        { field: 'username', order: 'ASC' },
+      ],
       page: query.page || 1,
       limit: query.limit || 10,
     });

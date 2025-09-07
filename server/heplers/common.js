@@ -28,6 +28,7 @@ function buildSelectQuery(tableName, options = {}) {
     status = 'ACTIVE',
     page = 1,
     limit = 10,
+    sort = null, // thêm sort
   } = options;
 
   let sql = `SELECT ${select.join(', ')} FROM ${tableName} WHERE 1=1`;
@@ -52,19 +53,29 @@ function buildSelectQuery(tableName, options = {}) {
     let keyword;
 
     if (hasVietnameseTones(search.keyword)) {
-      // keyword có dấu -> tìm chính xác theo dữ liệu gốc
       keyword = `%${search.keyword}%`;
       likeClause = search.fields.map((f) => `${f} LIKE ?`).join(' OR ');
     } else {
-      // keyword không dấu -> bỏ dấu khi so sánh
-      likeClause = search.fields
-        .map((f) => `${f} LIKE ?`) // search trên cột không dấu
-        .join(' OR ');
+      likeClause = search.fields.map((f) => `${f}_en LIKE ?`).join(' OR ');
       keyword = `%${removeVietnameseTones(search.keyword)}%`;
     }
 
     sql += ` AND (${likeClause})`;
     search.fields.forEach(() => params.push(keyword));
+  }
+
+  // sort
+  if (sort) {
+    if (Array.isArray(sort)) {
+      const sortClauses = sort.map(
+        (s) => `${s.field} ${s.order && s.order.toUpperCase() === 'DESC' ? 'DESC' : 'ASC'}`,
+      );
+      sql += ` ORDER BY ${sortClauses.join(', ')}`;
+    } else {
+      sql += ` ORDER BY ${sort.field} ${
+        sort.order && sort.order.toUpperCase() === 'DESC' ? 'DESC' : 'ASC'
+      }`;
+    }
   }
 
   // phân trang
